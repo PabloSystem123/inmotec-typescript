@@ -1,4 +1,5 @@
 import React from "react"
+import { useState } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "@/shared/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card"
@@ -8,6 +9,25 @@ import { Building2, Home, Key, MapPin, Search, Filter } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs"
 
 export default function PropertiesPage() {
+  const [activeTab, setActiveTab] = useState("venta")
+  const [filters, setFilters] = useState({
+    type: "all",
+    location: "all",
+    maxPrice: "all"
+  })
+
+  // Filtrar propiedades según el tab activo y filtros
+  const filteredProperties = allProperties.filter(property => {
+    const matchesTab = activeTab === "venta" 
+      ? property.status === "Venta" 
+      : property.status === "Alquiler"
+    
+    const matchesType = filters.type === "all" || property.type?.toLowerCase() === filters.type
+    const matchesLocation = filters.location === "all" || property.location.toLowerCase().includes(filters.location)
+    
+    return matchesTab && matchesType && matchesLocation
+  })
+
   return (
     <main className="flex min-h-screen flex-col">
       {/* Hero Section */}
@@ -25,7 +45,7 @@ export default function PropertiesPage() {
       <section className="py-8 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <Tabs defaultValue="venta" className="w-full">
+            <Tabs defaultValue="venta" className="w-full" onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="venta">Venta</TabsTrigger>
                 <TabsTrigger value="alquiler">Alquiler</TabsTrigger>
@@ -34,7 +54,7 @@ export default function PropertiesPage() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label className="text-sm font-medium mb-1 block">Tipo de propiedad</label>
-                    <Select>
+                    <Select value={filters.type} onValueChange={(value) => setFilters({...filters, type: value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Todos los tipos" />
                       </SelectTrigger>
@@ -49,7 +69,7 @@ export default function PropertiesPage() {
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-1 block">Ubicación</label>
-                    <Select>
+                    <Select value={filters.location} onValueChange={(value) => setFilters({...filters, location: value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Todas las ubicaciones" />
                       </SelectTrigger>
@@ -58,13 +78,13 @@ export default function PropertiesPage() {
                         <SelectItem value="poblado">El Poblado</SelectItem>
                         <SelectItem value="laureles">Laureles</SelectItem>
                         <SelectItem value="envigado">Envigado</SelectItem>
-                        <SelectItem value="belen">Belén</SelectItem>
+                        <SelectItem value="belén">Belén</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-1 block">Precio máximo</label>
-                    <Select>
+                    <Select value={filters.maxPrice} onValueChange={(value) => setFilters({...filters, maxPrice: value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Sin límite" />
                       </SelectTrigger>
@@ -93,7 +113,7 @@ export default function PropertiesPage() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label className="text-sm font-medium mb-1 block">Tipo de propiedad</label>
-                    <Select>
+                    <Select value={filters.type} onValueChange={(value) => setFilters({...filters, type: value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Todos los tipos" />
                       </SelectTrigger>
@@ -107,7 +127,7 @@ export default function PropertiesPage() {
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-1 block">Ubicación</label>
-                    <Select>
+                    <Select value={filters.location} onValueChange={(value) => setFilters({...filters, location: value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Todas las ubicaciones" />
                       </SelectTrigger>
@@ -116,13 +136,13 @@ export default function PropertiesPage() {
                         <SelectItem value="poblado">El Poblado</SelectItem>
                         <SelectItem value="laureles">Laureles</SelectItem>
                         <SelectItem value="envigado">Envigado</SelectItem>
-                        <SelectItem value="belen">Belén</SelectItem>
+                        <SelectItem value="belén">Belén</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-1 block">Precio máximo mensual</label>
-                    <Select>
+                    <Select value={filters.maxPrice} onValueChange={(value) => setFilters({...filters, maxPrice: value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Sin límite" />
                       </SelectTrigger>
@@ -156,7 +176,9 @@ export default function PropertiesPage() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold text-[#0c4a7b]">Propiedades Disponibles</h2>
+            <h2 className="text-2xl font-bold text-[#0c4a7b]">
+              Propiedades Disponibles ({filteredProperties.length})
+            </h2>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500">Ordenar por:</span>
               <Select defaultValue="recent">
@@ -175,7 +197,7 @@ export default function PropertiesPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {allProperties.map((property, index) => (
+            {filteredProperties.map((property, index) => (
               <Card
                 key={index}
                 className="overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow duration-300"
@@ -261,6 +283,7 @@ export default function PropertiesPage() {
 const allProperties = [
   {
     id: 1,
+    type: "casa",
     title: "Casa Moderna en El Poblado",
     price: "$850,000",
     location: "El Poblado, Medellín",
@@ -272,6 +295,7 @@ const allProperties = [
   },
   {
     id: 2,
+    type: "apartamento",
     title: "Apartamento de Lujo",
     price: "$450,000",
     location: "Laureles, Medellín",
@@ -283,6 +307,7 @@ const allProperties = [
   },
   {
     id: 3,
+    type: "apartamento",
     title: "Penthouse con Vista Panorámica",
     price: "$1,200,000",
     location: "Envigado, Antioquia",
@@ -294,6 +319,7 @@ const allProperties = [
   },
   {
     id: 4,
+    type: "casa",
     title: "Casa Campestre",
     price: "$750,000",
     location: "Llanogrande, Rionegro",
@@ -305,6 +331,7 @@ const allProperties = [
   },
   {
     id: 5,
+    type: "apartamento",
     title: "Apartamento Amoblado",
     price: "$2,500/mes",
     location: "Belén, Medellín",
@@ -316,6 +343,7 @@ const allProperties = [
   },
   {
     id: 6,
+    type: "local-comercial",
     title: "Local Comercial",
     price: "$350,000",
     location: "Centro, Medellín",
@@ -327,6 +355,7 @@ const allProperties = [
   },
   {
     id: 7,
+    type: "oficina",
     title: "Oficina Ejecutiva",
     price: "$3,000/mes",
     location: "El Poblado, Medellín",
@@ -338,6 +367,7 @@ const allProperties = [
   },
   {
     id: 8,
+    type: "casa",
     title: "Casa Familiar",
     price: "$520,000",
     location: "Sabaneta, Antioquia",
@@ -349,6 +379,7 @@ const allProperties = [
   },
   {
     id: 9,
+    type: "apartamento",
     title: "Apartamento con Terraza",
     price: "$380,000",
     location: "Envigado, Antioquia",
