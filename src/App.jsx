@@ -7,15 +7,13 @@ import { Toaster } from './shared/components/ui/toaster'
 // Pages
 import HomePage from './features/properties/pages/HomePage'
 import PropertiesPage from './features/properties/pages/PropertiesPage'
-import PropertyDetailsPage from './features/properties/pages/PropertyDetailsPage'
+import PropertyDetailPage from './features/properties/pages/PropertyDetailPage'
 import ContactPage from './features/contact/pages/ContactPage'
-import AboutPage from './features/properties/pages/AboutPage'
-import ServicesPage from './features/properties/pages/ServicesPage'
+import AboutPage from './features/about/pages/AboutPage'
+import ServicesPage from './features/services/pages/ServicesPage'
 import LoginPage from './features/auth/pages/LoginPage'
 import RegisterPage from './features/auth/pages/RegisterPage'
 import DashboardPage from './features/properties/pages/DashboardPage'
-import AdminIndexPage from './features/properties/pages/AdminIndexPage'
-import AdminDashboardPage from './features/properties/pages/AdminDashboardPage'
 
 function App() {
   return (
@@ -39,11 +37,11 @@ function App() {
         <Route path="/inmuebles/:id" element={
           <>
             <Navbar />
-            <PropertyDetailsPage />
+            <PropertyDetailPage />
             <Footer />
           </>
         } />
-        <Route path="/contactanos" element={
+        <Route path="/contacto" element={
           <>
             <Navbar />
             <ContactPage />
@@ -71,10 +69,6 @@ function App() {
         
         {/* Dashboard routes without navbar/footer */}
         <Route path="/dashboard" element={<DashboardPage />} />
-        
-        {/* Admin routes without navbar/footer */}
-        <Route path="/admin" element={<AdminIndexPage />} />
-        <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
       </Routes>
       <Toaster />
     </div>
